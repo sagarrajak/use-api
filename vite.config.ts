@@ -21,7 +21,7 @@ export default defineConfig((configEnv) => ({
   ],
   build: {
     lib: {
-      entry: resolve('src', 'component/index.ts'),
+      entry: resolve('src', 'components/index.ts'),
       name: 'UseApi',
       formats: ['es', 'umd'],
       fileName: (format) => `use-api.${format}.js`,
