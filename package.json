@@ -65,7 +65,8 @@
     "src/**/*.{js,jsx,ts,tsx}": [
       "yarn  eslint",
       "yarn  format"
-    ]
+    ],
+    "*.{js,css,md,html,json}": "prettier --cache --write"
   },
   "peerDependencies": {
     "react": "16.8.0 || >=17.x",
