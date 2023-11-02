@@ -19,8 +19,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports":true,
-    "forceConsistentCasingInFileNames":true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
     "declaration": true,
     "esModuleInterop": true,
     "declarationMap": true,
@@ -28,10 +28,7 @@
     "paths": {
       "use-api": ["src/component/index.ts"]
     },
-    "typeRoots": [
-      "node_modules/@types",
-      "src/component/index.d.ts"
-    ]
+    "typeRoots": ["node_modules/@types", "src/component/index.d.ts"]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

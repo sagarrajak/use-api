@@ -25,6 +25,6 @@ export default defineConfig((configEnv) => ({
       name: 'UseApi',
       formats: ['es', 'umd'],
       fileName: (format) => `use-api.${format}.js`,
-    }
+    },
   },
 }))
