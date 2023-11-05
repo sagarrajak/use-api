@@ -1,19 +1,20 @@
 import { Reducer } from '@reduxjs/toolkit'
 
-export interface RequestInterface {
+export type RequestInterface = {
   url: string
   type?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
-  requestData?: any | null
   queryParams?: { [key: string]: any }
   params?: string[]
   headers?: { [key: string]: string }
-  instanceType?: 'OS' | 'DS'
+  requestData?: any | null,
+  requestSpecificConfigurationPayload?: any;
 }
 
 export interface ApiInterface<S, E = any> extends RequestInterface {
   responseData: S | null
   error: E | null
-  isLoading: boolean
+  isLoading: boolean,
+  status: 'pending' | 'inprogress' | 'done'
 }
 
 export type RequestOverrideOptionInterface = {
@@ -30,4 +31,13 @@ export interface ApiCallerResponseInterface<S> {
   thunkAction: (request?: RequestOverrideOptionInterface) => any
   clear: any
   reduxKey: string
+}
+
+export type CallingLevel = 'component' | 'singleton' ;
+export type StoragePreference = 'localstorage' | 'redux' | 'session' | 'none';
+
+export type Configuration = {
+    callingLevel?: CallingLevel;
+    storage?: StoragePreference;
+    enabled?: boolean 
 }
