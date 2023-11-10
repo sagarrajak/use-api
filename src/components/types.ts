@@ -1,5 +1,9 @@
 import { Reducer } from '@reduxjs/toolkit'
 
+export type CallingLevel = 'component' | 'singleton';
+export type ExternalStoragePreference = 'localstorage' | 'session' | 'none';
+export type MemoryStoragepPreference = 'redux' | 'context' | 'zustand' | 'recoil'
+
 export type RequestInterface = {
   url: string
   type?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
@@ -8,6 +12,11 @@ export type RequestInterface = {
   headers?: { [key: string]: string }
   requestData?: any | null,
   requestSpecificConfigurationPayload?: any;
+
+  /**
+   * Can be called per component or app base
+   */
+  callingLevel?: CallingLevel;
 }
 
 export interface ApiInterface<S, E = any> extends RequestInterface {
@@ -33,11 +42,16 @@ export interface ApiCallerResponseInterface<S> {
   reduxKey: string
 }
 
-export type CallingLevel = 'component' | 'singleton' ;
-export type StoragePreference = 'localstorage' | 'redux' | 'session' | 'none';
+
 
 export type Configuration = {
-    callingLevel?: CallingLevel;
-    storage?: StoragePreference;
-    enabled?: boolean 
+  /**
+   * main memory Storage preference
+   **/
+  memoryStorage: MemoryStoragepPreference
+
+  /**
+   * store request response data to external storage 
+   * */
+  externalStorage?: ExternalStoragePreference;
 }
