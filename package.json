@@ -13,13 +13,12 @@
     "format": "prettier . --write"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
     "@reduxjs/toolkit": "^1.9.7",
+    "axios": "^1.6.2",
+    "lodash": "^4.17.21",
     "react": "16.8.0 || >=17.x",
     "react-dom": "16.8.0 || >=17.x",
-    "react-redux": "^8.1.3",
-    "recoil": "^0.7.7",
-    "zustand": "^4.4.6"
+    "react-redux": "^8.1.3"
   },
   "files": [
     "dist"
@@ -73,9 +72,6 @@
       "yarn  format"
     ],
     "*.{js,css,md,html,json}": "prettier --cache --write"
-  },
-  "peerDependencies": {
- 
   },
   "keywords": [],
   "author": "sagar rajak",
