@@ -1,6 +1,5 @@
-import React from 'react'
-// import { Configuration } from './types'
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
+import React from 'react'
 
 export type ApiContextProps<T extends string = any> = {
   factory: (enums: T, request: AxiosRequestConfig) => Promise<AxiosResponse>

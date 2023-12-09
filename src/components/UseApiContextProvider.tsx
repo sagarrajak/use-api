@@ -1,4 +1,4 @@
-import { ApiContext, ApiContextProps } from './useApiContext'
+import { ApiContext, ApiContextProps } from './context/useApiContext'
 
 export type UseApiContextProviderProps<S extends string> = ApiContextProps<S> & {
   children: JSX.Element

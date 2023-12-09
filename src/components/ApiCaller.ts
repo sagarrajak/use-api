@@ -1,12 +1,13 @@
 import { Action, createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit'
 import { ThunkAction, ThunkDispatch } from 'redux-thunk'
+
+import { useApiContext } from './context/useApiContext'
 import {
   ApiCallerResponseInterface,
   ApiInterface,
   RequestInterface,
   RequestOverrideOptionInterface,
 } from './types'
-import { useApiContext } from './useApiContext'
 import { isNil, isUndefined } from './utils'
 
 const formatRequest = (request: any) => {
@@ -24,7 +25,7 @@ const formatRequest = (request: any) => {
   }
 }
 
-const setParams =  (request: any): void => {
+const setParams = (request: any): void => {
   const { params, url } = request
   if (params === null || params === undefined) return
   if ((params || []).length <= 0) return
@@ -40,7 +41,7 @@ export class ApiError extends Error {
   }
 }
 
-export const thunkApis : Record<string, Reducer<any>> = {}
+export const thunkApis: Record<string, Reducer<any>> = {}
 
 /**
  * @param request self explained request params
@@ -54,7 +55,7 @@ export const ApiCaller = <IKeys extends string, S, E = any>(
 ): ApiCallerResponseInterface<ApiInterface<IKeys, S, E>> => {
   const { factory, serialzeError, serialzeResponse } = useApiContext()
   formatRequest(request)
-  let initialState: ApiInterface<IKeys, S, E> = {
+  const initialState: ApiInterface<IKeys, S, E> = {
     ...request,
     responseData: null,
     error: null,
@@ -124,10 +125,10 @@ export const ApiCaller = <IKeys extends string, S, E = any>(
       return Promise.reject('Invalid Request')
     }
   }
-  
-  // TODO check if key is unique 
-  thunkApis[reduxKey] = apiSlice.reducer;
-  
+
+  // TODO check if key is unique
+  thunkApis[reduxKey] = apiSlice.reducer
+
   return {
     reducer: apiSlice.reducer,
     thunkAction,

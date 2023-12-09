@@ -4,14 +4,14 @@ import { AxiosRequestConfig, Method } from 'axios'
 export type CallingLevel = 'component' | 'singleton'
 
 type RequestOptions = {
-  GET: {}
+  GET: object
   POST: {
     requestData?: any | null
   }
   PUT: {
     requestData?: any | null
   }
-  DELETE: {}
+  DELETE: object
   PATCH: {
     requestData?: any | null
   }
