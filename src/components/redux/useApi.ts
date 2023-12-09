@@ -1,29 +1,29 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { useAppSelector } from '../redux';
 import {
 	ApiCallerResponseInterface,
 	ApiInterface,
 	RequestOverrideOptionInterface,
 } from '../types';
 
-type UseApiCallResponse<S, E> = {
+type UseApiCallResponse<Keys extends string,S, E> = {
 	call: (overrideRequest?: RequestOverrideOptionInterface) => Promise<{
 		payload: S
 		type: any
 	}>
 	clear: () => void
-} & ApiInterface<S, E>
+} & ApiInterface<Keys, S, E>
 
-export default function useApiRedux<S, E = any>(
-	thunkRequest: ApiCallerResponseInterface<ApiInterface<S, E>>,
+export default function useApi<Keys extends string, S, E = any>(
+	thunkRequest: ApiCallerResponseInterface<ApiInterface<Keys, S, E>>,
 	onError?: (err: any) => void,
 	onSuccess?: (responseData: S) => void,
-): UseApiCallResponse<S,E> {
+): UseApiCallResponse<Keys, S,E> {
+
 	const appDispatch = useDispatch()
-	const responseData: ApiInterface<S, E> = useAppSelector(
-		state => (state.apis as any)[thunkRequest.reduxKey],
+	const responseData: ApiInterface<Keys, S, E> = useSelector(
+		(state: any) => (state.apis as any)[thunkRequest.reduxKey],
 	)
 
 	useEffect(() => {

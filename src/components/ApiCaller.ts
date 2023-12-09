@@ -1,4 +1,4 @@
-import { Action, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { Action, createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit'
 import { ThunkAction, ThunkDispatch } from 'redux-thunk'
 import {
   ApiCallerResponseInterface,
@@ -6,7 +6,7 @@ import {
   RequestInterface,
   RequestOverrideOptionInterface,
 } from './types'
-import { useApiContext } from './UseApiContext'
+import { useApiContext } from './useApiContext'
 import { isNil, isUndefined } from './utils'
 
 const formatRequest = (request: any) => {
@@ -40,6 +40,8 @@ export class ApiError extends Error {
   }
 }
 
+export const thunkApis : Record<string, Reducer<any>> = {}
+
 /**
  * @param request self explained request params
  * @param name must be unique for every api
@@ -52,13 +54,16 @@ export const ApiCaller = <IKeys extends string, S, E = any>(
 ): ApiCallerResponseInterface<ApiInterface<IKeys, S, E>> => {
   const { factory, serialzeError, serialzeResponse } = useApiContext()
   formatRequest(request)
-  const initialState: ApiInterface<IKeys, S, E> = {
+  let initialState: ApiInterface<IKeys, S, E> = {
     ...request,
-    requestData: null,
     responseData: null,
     error: null,
     isLoading: false,
     status: 'pending',
+  }
+
+  if (request.type === 'POST' || request.type === 'PUT' || request.type === 'PATCH') {
+    initialState.responseData = null
   }
 
   const apiSlice = createSlice({
@@ -102,9 +107,6 @@ export const ApiCaller = <IKeys extends string, S, E = any>(
     request?: RequestOverrideOptionInterface,
   ): ThunkAction<Promise<any>, any, unknown, Action<string>> {
     return async (dispatch: ThunkDispatch<any, unknown, Action<string>>): Promise<any> => {
-      // if (isNil(request)) {
-      //   request = {}
-      // }
       const currentRequest = Object.assign({}, upperScopeRequest, request)
       formatRequest(currentRequest)
       dispatch(requested(currentRequest))
@@ -122,7 +124,10 @@ export const ApiCaller = <IKeys extends string, S, E = any>(
       return Promise.reject('Invalid Request')
     }
   }
-
+  
+  // TODO check if key is unique 
+  thunkApis[reduxKey] = apiSlice.reducer;
+  
   return {
     reducer: apiSlice.reducer,
     thunkAction,
