@@ -5,6 +5,9 @@ import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 import EsLint from 'vite-plugin-linter'
 import tsConfigPaths from 'vite-tsconfig-paths'
+
+import * as packageJson from './package.json';
+
 const { EsLinter, linterPlugin } = EsLint
 // https://vitejs.dev/config/
 export default defineConfig((configEnv) => ({
@@ -21,10 +24,13 @@ export default defineConfig((configEnv) => ({
   ],
   build: {
     lib: {
-      entry: resolve('src', 'component/index.ts'),
+      entry: resolve('src', 'components/index.ts'),
       name: 'UseApi',
       formats: ['es', 'umd'],
       fileName: (format) => `use-api.${format}.js`,
     },
+  },
+  optimizeDeps: {
+    include: [...Object.keys(packageJson.peerDependencies)],
   },
 }))
