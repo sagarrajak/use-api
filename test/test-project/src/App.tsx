@@ -1,41 +1,13 @@
-import './App.css'
-
 import { useEffect, useState } from 'react'
-
-import viteLogo from '/vite.svg'
-
 import reactLogo from './assets/react.svg'
-import { useApi } from './components'
+import viteLogo from '/vite.svg'
+import './App.css'
+import { useApi } from '../../../dist'
 import { testApi } from './api'
-
-import { ApiCaller } from "./components"
-import React from 'react'
-
-type BasicResponse<T> = {
-  status: 'success' | 'error'
-  data: T
-  message: string
-}
-
-type Employee = {
-  id: string
-  employee_name: string
-  employee_salary: number
-  employee_age: 123
-  profile_image: string
-}
-
 
 function App() {
   const [count, setCount] = useState(0)
-  
-  const testApi = React.useMemo(() => {
-    return  ApiCaller<'api1', BasicResponse<Employee[]>>('test1', {
-    type: 'GET',
-    url: 'posts',
-    keys: 'api1',
-  })
-}, []);
+  // let x: RequestOverrideOptionInterface
 
   const {call, clear, isLoading, responseData} = useApi(testApi)
 
@@ -43,16 +15,14 @@ function App() {
     call()
   }, [])
 
-
   console.log(responseData, isLoading);
-  
   return (
     <>
       <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
+        <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
+        <a href="https://react.dev" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>

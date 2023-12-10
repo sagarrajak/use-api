@@ -1,7 +1,7 @@
-import { Action, createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit'
+import { Action, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ThunkAction, ThunkDispatch } from 'redux-thunk'
 
-import { useApiContext } from './context/useApiContext'
+import { ApiContextProps } from './context/useApiContext'
 import {
   ApiCallerResponseInterface,
   ApiInterface,
@@ -41,7 +41,7 @@ export class ApiError extends Error {
   }
 }
 
-export const thunkApis: Record<string, Reducer<any>> = {}
+
 
 /**
  * @param request self explained request params
@@ -53,7 +53,6 @@ export const ApiCaller = <IKeys extends string, S, E = any>(
   reduxKey: string,
   request: RequestInterface<IKeys>,
 ): ApiCallerResponseInterface<ApiInterface<IKeys, S, E>> => {
-  const { factory, serialzeError, serialzeResponse } = useApiContext()
   formatRequest(request)
   const initialState: ApiInterface<IKeys, S, E> = {
     ...request,
@@ -105,8 +104,21 @@ export const ApiCaller = <IKeys extends string, S, E = any>(
   const upperScopeRequest = request
 
   function thunkAction(
-    request?: RequestOverrideOptionInterface,
+    request: RequestOverrideOptionInterface | undefined,
+    context: ApiContextProps<IKeys> 
   ): ThunkAction<Promise<any>, any, unknown, Action<string>> {
+
+    const { factory, serialzeError, serialzeResponse, store, isKeyAlreadyInserted} = context;
+
+    // check if reducer exist, if not exist inset the reducer 
+    // idk how i am gonna do this 
+    // i am still figuring out
+    if (!isKeyAlreadyInserted.has(reduxKey)) {
+      // insert the reducer 
+      // store.replaceReducer()
+      isKeyAlreadyInserted.set(reduxKey, true);
+    }
+
     return async (dispatch: ThunkDispatch<any, unknown, Action<string>>): Promise<any> => {
       const currentRequest = Object.assign({}, upperScopeRequest, request)
       formatRequest(currentRequest)
@@ -127,7 +139,8 @@ export const ApiCaller = <IKeys extends string, S, E = any>(
   }
 
   // TODO check if key is unique
-  thunkApis[reduxKey] = apiSlice.reducer
+  // thunkApis[reduxKey] = apiSlice.reducer
+
 
   return {
     reducer: apiSlice.reducer,

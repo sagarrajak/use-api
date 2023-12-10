@@ -6,7 +6,7 @@ import dts from 'vite-plugin-dts'
 import EsLint from 'vite-plugin-linter'
 import tsConfigPaths from 'vite-tsconfig-paths'
 
-import * as packageJson from './package.json';
+import * as packageJson from './package.json'
 
 const { EsLinter, linterPlugin } = EsLint
 // https://vitejs.dev/config/
@@ -19,7 +19,8 @@ export default defineConfig((configEnv) => ({
       linters: [new EsLinter({ configEnv })],
     }),
     dts({
-      include: ['src/component/'],
+      rollupTypes: true,
+      include: ['src/components/'],
     }),
   ],
   build: {
