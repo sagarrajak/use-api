@@ -1,4 +1,4 @@
-import { Action, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { Action, combineReducers, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ThunkAction, ThunkDispatch } from 'redux-thunk'
 
 import { ApiContextProps } from './context/useApiContext'
@@ -29,7 +29,7 @@ const setParams = (request: any): void => {
   const { params, url } = request
   if (params === null || params === undefined) return
   if ((params || []).length <= 0) return
-  request.url = url + '/' + params.map((str: string) => encodeURIComponent(str)).join('/')
+  request.url = url + '/' + params.join('/')
 }
 
 export class ApiError extends Error {
@@ -40,8 +40,6 @@ export class ApiError extends Error {
     this.error = err
   }
 }
-
-
 
 /**
  * @param request self explained request params
@@ -105,22 +103,25 @@ export const ApiCaller = <IKeys extends string, S, E = any>(
 
   function thunkAction(
     request: RequestOverrideOptionInterface | undefined,
-    context: ApiContextProps<IKeys> 
+    context: ApiContextProps<IKeys>,
   ): ThunkAction<Promise<any>, any, unknown, Action<string>> {
+    const { factory, serialzeError, serialzeResponse, store, apisReducers, reducers } = context
 
-    const { factory, serialzeError, serialzeResponse, store, isKeyAlreadyInserted} = context;
-
-    // check if reducer exist, if not exist inset the reducer 
-    // idk how i am gonna do this 
-    // i am still figuring out
-    if (!isKeyAlreadyInserted.has(reduxKey)) {
-      // insert the reducer 
-      // store.replaceReducer()
-      isKeyAlreadyInserted.set(reduxKey, true);
+    if (!apisReducers[reduxKey]) {
+      apisReducers[reduxKey] = apiSlice.reducer
+      store.replaceReducer(
+        combineReducers({
+          apis: combineReducers({
+            ...apisReducers,
+          }),
+          ...reducers,
+        }),
+      )
     }
 
     return async (dispatch: ThunkDispatch<any, unknown, Action<string>>): Promise<any> => {
       const currentRequest = Object.assign({}, upperScopeRequest, request)
+      console.log({currentRequest});
       formatRequest(currentRequest)
       dispatch(requested(currentRequest))
       setParams(currentRequest)
@@ -137,10 +138,6 @@ export const ApiCaller = <IKeys extends string, S, E = any>(
       return Promise.reject('Invalid Request')
     }
   }
-
-  // TODO check if key is unique
-  // thunkApis[reduxKey] = apiSlice.reducer
-
 
   return {
     reducer: apiSlice.reducer,

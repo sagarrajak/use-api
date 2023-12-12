@@ -20,6 +20,8 @@ export function useApi<Keys extends string, S, E = any>(
   const appDispatch = useDispatch()
   const context = useApiContext()
   
+
+
   const responseData: ApiInterface<Keys, S, E> = useSelector(
     (state: any) => (state.apis as any)[thunkRequest.reduxKey],
   )

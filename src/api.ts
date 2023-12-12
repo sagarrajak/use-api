@@ -16,6 +16,6 @@ type Employee = {
 
 export const testApi = ApiCaller<'api1', BasicResponse<Employee[]>>('test1', {
   type: 'GET',
-  url: 'employees',
+  url: 'users',
   keys: 'api1',
 })
