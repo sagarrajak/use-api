@@ -1,5 +1,6 @@
 import { Reducer } from '@reduxjs/toolkit'
 import { AxiosRequestConfig, Method } from 'axios'
+import { ApiContextProps } from '.'
 
 export type CallingLevel = 'component' | 'singleton'
 
@@ -54,9 +55,18 @@ export type ApiInterface<IKeys extends string, S, E = any> = RequestInterface<IK
   isLoading: boolean
   status: 'pending' | 'inprogress' | 'done' | 'not-called'
 }
+
+
+// // get Keys type 
+// type IKeysFrom<ApiInterface> = ApiInterface extends {keys: infer IKeys} ? (IKeys extends string ? IKeys: any ): any; 
+
+
 export interface ApiCallerResponseInterface<S> {
   reducer: Reducer<S>
-  thunkAction: (request?: RequestOverrideOptionInterface) => any
+  thunkAction: (
+    request: RequestOverrideOptionInterface | undefined,
+    context: ApiContextProps<any>,
+  ) => any
   clear: any
   reduxKey: string
 }

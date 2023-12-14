@@ -1,32 +1,39 @@
 import './App.css'
 
-import { useState } from 'react'
-
-import viteLogo from '/vite.svg'
-
-import reactLogo from './assets/react.svg'
+import { useEffect } from 'react'
+import { testApi } from './api'
+import { useApi } from './components'
+import { useAppDispatch, useAppSelector } from './store'
+import { increase } from './test.slice'
 
 function App() {
-  const [count, setCount] = useState(0)
+  // const [count, setCount] = useState(0)
+  const dispatch = useAppDispatch()
 
+  const { call, clear, isLoading, responseData } = useApi(testApi)
+
+  useEffect(() => {
+    call()
+  }, [])
+
+  const count = useAppSelector((state) => state.count.count)
+  const rand =  () => String(parseInt(String(Math.random() * 10)))
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+      <h4>{count}</h4>
+      <p>{JSON.stringify(responseData)}</p>
+      <button onClick={() => dispatch(increase())}>+</button>
+      <button
+        onClick={() =>
+          call({
+            params: [rand()],
+            type: 'GET',
+          })
+        }
+      >
+        click
+      </button>
+      {isLoading && <h4>IsLoading</h4>}
     </>
   )
 }

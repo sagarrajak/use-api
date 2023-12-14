@@ -1,10 +1,18 @@
-import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
+import { AxiosError, AxiosResponse } from 'axios'
 import React from 'react'
+import { RequestInterface } from '..'
+import { Reducer } from '@reduxjs/toolkit'
+import { ToolkitStore } from '@reduxjs/toolkit/dist/configureStore'
 
-export type ApiContextProps<T extends string = any> = {
-  factory: (enums: T, request: AxiosRequestConfig) => Promise<AxiosResponse>
+export type SetKeyAndReducerFunc = (key: string, reducerFunc: Reducer<any>) => void
+
+export type ApiContextProps<IKeys extends string = any> = {
+  factory: (enums: IKeys, request: RequestInterface<IKeys>) => Promise<AxiosResponse>
   serialzeError: (data: AxiosError) => Promise<any>
   serialzeResponse: <ApiResponse>(data: AxiosResponse) => ApiResponse
+  store: ToolkitStore
+  apisReducers: Record<string, Reducer<any>>
+  reducers: { [key: string]: Reducer<any> }
 }
 
 export const ApiContext = React.createContext<ApiContextProps | null>(null)
