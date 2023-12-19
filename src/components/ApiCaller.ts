@@ -8,38 +8,7 @@ import {
   RequestInterface,
   RequestOverrideOptionInterface,
 } from './types'
-import { isNil, isUndefined } from './utils'
-
-const formatRequest = (request: any) => {
-  if (isNil(request.headers)) {
-    request.headers = {}
-  }
-  if (isNil(request.params)) {
-    request.params = []
-  }
-  if (isNil(request.queryParams)) {
-    request.queryParams = {}
-  }
-  if (isUndefined(request.requestData)) {
-    request.requestData = null
-  }
-}
-
-const setParams = (request: any): void => {
-  const { params, url } = request
-  if (params === null || params === undefined) return
-  if ((params || []).length <= 0) return
-  request.url = url + '/' + params.join('/')
-}
-
-export class ApiError extends Error {
-  public error: any
-  constructor(message: string, err: any) {
-    super(message)
-    this.name = 'ApiError'
-    this.error = err
-  }
-}
+import { formatRequest, setParams } from './utils'
 
 /**
  * @param request self explained request params
@@ -121,7 +90,6 @@ export const ApiCaller = <IKeys extends string, S, E = any>(
 
     return async (dispatch: ThunkDispatch<any, unknown, Action<string>>): Promise<any> => {
       const currentRequest = Object.assign({}, upperScopeRequest, request)
-      console.log({currentRequest});
       formatRequest(currentRequest)
       dispatch(requested(currentRequest))
       setParams(currentRequest)
