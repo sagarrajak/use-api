@@ -7,10 +7,10 @@ export type CallingLevel = 'component' | 'singleton'
 type RequestOptions = {
   GET: object
   POST: {
-    requestData?: any | null
+    requestData: any | null
   }
   PUT: {
-    requestData?: any | null
+    requestData: any | null
   }
   DELETE: object
   PATCH: {
@@ -25,7 +25,7 @@ export type RequestOverrideOptionInterface = {
   headers?: { [key: string]: string }
 } & {
   [RequestType in keyof RequestOptions]: {
-    type: RequestType
+    type?: RequestType
   } & RequestOptions[RequestType]
 }[keyof RequestOptions]
 
@@ -45,7 +45,7 @@ export type RequestInterface<IKeys extends string> = {
   callingLevel?: CallingLevel
 } & {
   [RequestType in keyof RequestOptions]: {
-    type: RequestType
+    type?: RequestType
   } & RequestOptions[RequestType]
 }[keyof RequestOptions]
 
@@ -56,10 +56,8 @@ export type ApiInterface<IKeys extends string, S, E = any> = RequestInterface<IK
   status: 'pending' | 'inprogress' | 'done' | 'not-called'
 }
 
-
-// // get Keys type 
-// type IKeysFrom<ApiInterface> = ApiInterface extends {keys: infer IKeys} ? (IKeys extends string ? IKeys: any ): any; 
-
+// // get Keys type
+// type IKeysFrom<ApiInterface> = ApiInterface extends {keys: infer IKeys} ? (IKeys extends string ? IKeys: any ): any;
 
 export interface ApiCallerResponseInterface<S> {
   reducer: Reducer<S>
