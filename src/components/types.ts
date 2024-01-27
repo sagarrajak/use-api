@@ -23,11 +23,13 @@ export type RequestOverrideOptionInterface = {
   queryParams?: { [key: string]: any }
   params?: string[]
   headers?: { [key: string]: string }
+  hashKey?: (string | number)[]
 } & {
   [RequestType in keyof RequestOptions]: {
     type?: RequestType
   } & RequestOptions[RequestType]
 }[keyof RequestOptions]
+
 
 export type RequestInterface<IKeys extends string> = {
   url: string
@@ -38,7 +40,6 @@ export type RequestInterface<IKeys extends string> = {
   otherAxiosConfiguration?: AxiosRequestConfig
   // override upper request payload with axios payload
   keys: IKeys
-
   /**
    * Can be called per component or app base
    */
@@ -50,7 +51,7 @@ export type RequestInterface<IKeys extends string> = {
 }[keyof RequestOptions]
 
 export type ApiInterface<IKeys extends string, S, E = any> = RequestInterface<IKeys> & {
-  responseData: S | null
+  data: S | null
   error: E | null
   isLoading: boolean
   status: 'pending' | 'inprogress' | 'done' | 'not-called'

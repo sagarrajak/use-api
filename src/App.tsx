@@ -10,7 +10,7 @@ function App() {
   // const [count, setCount] = useState(0)
   const dispatch = useAppDispatch()
 
-  const { call, clear, isLoading, responseData } = useApi(testApi)
+  const { call, clear, isLoading, data } = useApi(testApi)
 
   useEffect(() => {
     call()
@@ -21,13 +21,14 @@ function App() {
   return (
     <>
       <h4>{count}</h4>
-      <p>{JSON.stringify(responseData)}</p>
+      <p>{JSON.stringify(data)}</p>
       <button onClick={() => dispatch(increase())}>+</button>
       <button
         onClick={() =>
           call({
             params: [rand()],
             type: 'GET',
+            hashKey: [rand()]
           })
         }
       >

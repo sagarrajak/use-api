@@ -8,7 +8,8 @@ import {
   RequestInterface,
   RequestOverrideOptionInterface,
 } from './types'
-import { formatRequest, setParams } from './utils'
+import { formatRequest, isFunction, isNil, setParams } from './utils'
+import { ApiSliceFactory } from './ApiSliceFactory'
 
 /**
  * @param request self explained request params
@@ -21,50 +22,10 @@ export const ApiCaller = <IKeys extends string, S, E = any>(
   request: RequestInterface<IKeys>,
 ): ApiCallerResponseInterface<ApiInterface<IKeys, S, E>> => {
   formatRequest(request)
-  const initialState: ApiInterface<IKeys, S, E> = {
-    ...request,
-    responseData: null,
-    error: null,
-    isLoading: false,
-    status: 'pending',
-  }
 
-  if (request.type === 'POST' || request.type === 'PUT' || request.type === 'PATCH') {
-    initialState.responseData = null
-  }
-
-  const apiSlice = createSlice({
-    name: reduxKey,
-    initialState,
-    reducers: {
-      requested(state, action: PayloadAction<RequestInterface<IKeys> | null>): void {
-        if (action.payload) {
-          Object.assign(state, action.payload)
-        }
-        state.isLoading = true
-        state.responseData = null
-        state.error = null
-        state.status = 'inprogress'
-      },
-      success(state, action): void {
-        state.isLoading = false
-        state.responseData = action.payload
-        state.error = null
-        state.status = 'done'
-      },
-      error(state, action): void {
-        state.isLoading = false
-        state.responseData = null
-        state.error = action.payload
-        state.status = 'done'
-      },
-      clear(state): void {
-        state.isLoading = false
-        state.responseData = null
-        state.error = null
-        state.status = 'pending'
-      },
-    },
+  const apiSlice = ApiSliceFactory<IKeys, S, E>({
+    request,
+    mainKey: reduxKey,
   })
 
   const { error, requested, success, clear } = apiSlice.actions
@@ -76,8 +37,38 @@ export const ApiCaller = <IKeys extends string, S, E = any>(
   ): ThunkAction<Promise<any>, any, unknown, Action<string>> {
     const { factory, serialzeError, serialzeResponse, store, apisReducers, reducers } = context
 
+    const hashKey = request?.hashKey
+
     if (!apisReducers[reduxKey]) {
-      apisReducers[reduxKey] = apiSlice.reducer
+      if (hashKey) {
+        apisReducers[reduxKey] = combineReducers({
+          [hashKey.join(',')]: apiSlice.reducer,
+        })
+      } else {
+        apisReducers[reduxKey] = apiSlice.reducer
+      }
+
+      store.replaceReducer(
+        combineReducers({
+          apis: combineReducers({
+            ...apisReducers,
+          }),
+          ...reducers,
+        }),
+      )
+    } else if (hashKey && hashKey?.length > 0) {
+      console.log(apisReducers[reduxKey]);
+      // if (isFunction(apisReducers[reduxKey])) {
+      //   apisReducers[reduxKey] = combineReducers({
+      //     [hashKey.join(',')]: apiSlice.reducer,
+      //   })
+      // } else {
+        const previousReducers = {...apisReducers[reduxKey]}
+        apisReducers[reduxKey] = combineReducers({
+          [hashKey.join(',')]: apiSlice.reducer,
+          ...previousReducers,
+        })
+      // }
       store.replaceReducer(
         combineReducers({
           apis: combineReducers({

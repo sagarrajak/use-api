@@ -9,13 +9,13 @@ function App() {
   const [count, setCount] = useState(0)
   // let x: RequestOverrideOptionInterface
 
-  const {call, clear, isLoading, responseData} = useApi(testApi)
+  const {call, clear, isLoading, data} = useApi(testApi)
 
   useEffect(() => {
     call()
   }, [])
 
-  console.log(responseData, isLoading);
+  console.log(data, isLoading);
   return (
     <>
       <div>

@@ -6,6 +6,7 @@ export const isUndefined = (data: any) => {
   return data === undefined
 }
 
+export const isFunction = (value: any) => typeof value === 'function';
 
 export const formatRequest = (request: any) => {
   if (isNil(request.headers)) {

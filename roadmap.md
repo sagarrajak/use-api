@@ -3,7 +3,8 @@
 ## Version 0.0.1 Beta (Current Release)
 - Build basic use api
   - build basic use api with minimum feature to release so that community could suggest new feature to add
-  - ProgresS: in progress
+  - Dynamic key support 
+  - Fully Type Api Calls (Type for request, response, query string etc)
 
 - Write test for use-api
   - Writting test for current 
