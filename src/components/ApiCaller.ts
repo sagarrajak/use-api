@@ -8,8 +8,9 @@ import {
   RequestInterface,
   RequestOverrideOptionInterface,
 } from './types'
-import { formatRequest, isFunction, isNil, setParams } from './utils'
+import { formatRequest, isFunction, isNil, isObjectType, setParams } from './utils'
 import { ApiSliceFactory } from './ApiSliceFactory'
+import { BuildReducerFromMap } from './BuildReducerFromMap'
 
 /**
  * @param request self explained request params
@@ -35,49 +36,48 @@ export const ApiCaller = <IKeys extends string, S, E = any>(
     request: RequestOverrideOptionInterface | undefined,
     context: ApiContextProps<IKeys>,
   ): ThunkAction<Promise<any>, any, unknown, Action<string>> {
-    const { factory, serialzeError, serialzeResponse, store, apisReducers, reducers } = context
+    const { factory, serialzeError, serialzeResponse, store, apisReducers, reducers, setApiReducers } = context
 
     const hashKey = request?.hashKey
 
     if (!apisReducers[reduxKey]) {
       if (hashKey) {
-        apisReducers[reduxKey] = combineReducers({
+        apisReducers[reduxKey] = {
           [hashKey.join(',')]: apiSlice.reducer,
-        })
+        }
       } else {
         apisReducers[reduxKey] = apiSlice.reducer
       }
 
       store.replaceReducer(
         combineReducers({
-          apis: combineReducers({
-            ...apisReducers,
-          }),
+          apis: BuildReducerFromMap(apisReducers),
           ...reducers,
         }),
       )
+      setApiReducers({...apisReducers});
     } else if (hashKey && hashKey?.length > 0) {
-      console.log(apisReducers[reduxKey]);
-      // if (isFunction(apisReducers[reduxKey])) {
-      //   apisReducers[reduxKey] = combineReducers({
-      //     [hashKey.join(',')]: apiSlice.reducer,
-      //   })
-      // } else {
+      if (!isObjectType(apisReducers[reduxKey])) {
+        apisReducers[reduxKey] = {
+          [hashKey.join(',')]: apiSlice.reducer,
+        }
+      } else {
         const previousReducers = {...apisReducers[reduxKey]}
-        apisReducers[reduxKey] = combineReducers({
+        apisReducers[reduxKey] = {
           [hashKey.join(',')]: apiSlice.reducer,
           ...previousReducers,
-        })
-      // }
+        }
+      }
       store.replaceReducer(
         combineReducers({
-          apis: combineReducers({
-            ...apisReducers,
-          }),
+          apis: BuildReducerFromMap(apisReducers),
           ...reducers,
         }),
       )
+      setApiReducers({...apisReducers});
     }
+
+    
 
     return async (dispatch: ThunkDispatch<any, unknown, Action<string>>): Promise<any> => {
       const currentRequest = Object.assign({}, upperScopeRequest, request)

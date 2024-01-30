@@ -1,8 +1,12 @@
 import { Provider, ProviderProps } from 'react-redux'
-import { ApiContext, ApiContextProps } from './useApiContext'
-import { Action, AnyAction } from '@reduxjs/toolkit'
+import { ApiContext, ApiContextProps, ReducerMap } from './useApiContext'
+import { Action, AnyAction, Reducer } from '@reduxjs/toolkit'
+import { useState } from 'react'
 
-export type ApiProviderProps<S extends string> = Omit<ApiContextProps<S>, 'apisReducers'> & {
+export type ApiProviderProps<S extends string> = Omit<
+  ApiContextProps<S>,
+  'apisReducers' | 'setApiReducers'
+> & {
   children: JSX.Element
 }
 
@@ -16,10 +20,19 @@ export function ApiProvider<A extends Action = AnyAction, S = unknown, E extends
   props: ApiProviderPropsWithRedux<A, S, E>,
 ) {
   const { children } = props
-
+  const [apisReducers, setApiReducer] = useState<ReducerMap>({})
+  console.log({apisReducers});
   return (
     <Provider {...props}>
-      <ApiContext.Provider value={{ ...props, apisReducers: {} }}>{children}</ApiContext.Provider>
+      <ApiContext.Provider
+        value={{
+          ...props,
+          apisReducers,
+          setApiReducers: (value: ReducerMap) => setApiReducer(value),
+        }}
+      >
+        {children}
+      </ApiContext.Provider>
     </Provider>
   )
 }

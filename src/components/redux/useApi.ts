@@ -14,8 +14,9 @@ type UseApiCallResponse<Keys extends string, S, E> = {
 
 export function useApi<Keys extends string, S, E = any>(
   thunkRequest: ApiCallerResponseInterface<ApiInterface<Keys, S, E>>,
-  onError?: (err: any) => void,
-  onSuccess?: (data: S) => void,
+  params?: {
+    hashKey?: (string | number)[]
+  }
 ): UseApiCallResponse<Keys, S, E> {
 
   const hashKey = useRef<(string | number)[]>();
@@ -28,18 +29,6 @@ export function useApi<Keys extends string, S, E = any>(
   ) : useSelector(
     (state: any) => (state.apis as any)[thunkRequest.reduxKey],
   )
-
-  useEffect(() => {
-    if (!data) return
-    const { data: res } = data
-    if (!data.isLoading) {
-      if (!res && data.error) {
-        if (onError) onError(data?.error)
-      } else if (res && !data.error) {
-        if (onSuccess) onSuccess(res)
-      }
-    }
-  }, [data])
 
   return {
     call: (overrideRequest?: RequestOverrideOptionInterface) => {

@@ -6,6 +6,18 @@ import { useApi } from './components'
 import { useAppDispatch, useAppSelector } from './store'
 import { increase } from './test.slice'
 
+
+function Test() {
+  const { data } = useApi(testApi, {
+    hashKey: [5],
+  })
+  return (
+    <>
+      <p style={{ color: 'red' }}>{JSON.stringify(data)}</p>
+    </>
+  )
+}
+
 function App() {
   // const [count, setCount] = useState(0)
   const dispatch = useAppDispatch()
@@ -35,6 +47,7 @@ function App() {
         click
       </button>
       {isLoading && <h4>IsLoading</h4>}
+      <Test/>
     </>
   )
 }
